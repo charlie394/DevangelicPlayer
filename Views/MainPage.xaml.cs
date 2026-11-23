@@ -7,10 +7,4 @@ public partial class MainPage : ContentPage
         InitializeComponent();
         BindingContext = vm;
     }
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        if (BindingContext is MainViewModel vm)
-            await vm.LoadCommand.ExecuteAsync(null);
-    }
 }
