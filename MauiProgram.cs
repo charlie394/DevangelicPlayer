@@ -10,7 +10,7 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder.UseMauiApp<App>().UseMauiCommunityToolkit().ConfigureFonts(f => f.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
+        builder.UseMauiApp<App>().UseMauiCommunityToolkit();
         builder.Services.AddSingleton<DatabaseService>();
         builder.Services.AddSingleton<ScannerService>();
         builder.Services.AddSingleton<AudioService>();
