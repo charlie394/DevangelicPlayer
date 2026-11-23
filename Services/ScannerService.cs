@@ -7,6 +7,7 @@ public class ScannerService
     public async Task<int> ScanFolderAsync(string folder, IProgress<int> progress = null)
     {
         await _db.InitAsync();
+        if (!Directory.Exists(folder)) return 0;
         var exts = new[] { ".mp3", ".flac", ".ogg", ".m4a", ".wav" };
         var files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories).Where(f => exts.Contains(Path.GetExtension(f).ToLower())).ToList();
         int count = 0;
@@ -14,19 +15,14 @@ public class ScannerService
         {
             try
             {
-                using var tagFile = TagLib.File.Create(file);
                 var song = new Song
                 {
                     Path = file,
-                    Title = string.IsNullOrWhiteSpace(tagFile.Tag.Title) ? Path.GetFileNameWithoutExtension(file) : tagFile.Tag.Title,
-                    Artist = tagFile.Tag.FirstPerformer ?? "Desconocido",
-                    Album = tagFile.Tag.Album ?? "",
-                    Genre = tagFile.Tag.FirstGenre ?? "",
-                    Year = (int)tagFile.Tag.Year,
-                    Track = (int)tagFile.Tag.Track,
-                    Duration = tagFile.Properties.Duration.TotalSeconds,
+                    Title = Path.GetFileNameWithoutExtension(file),
+                    Artist = "Desconocido",
+                    Album = "",
+                    Duration = 0,
                     FileSize = new FileInfo(file).Length,
-                    Bitrate = tagFile.Properties.AudioBitrate
                 };
                 await _db.AddOrUpdateAsync(song);
                 count++; progress?.Report(count);
