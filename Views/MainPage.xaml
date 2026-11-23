@@ -1,8 +1,81 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DevangelicPlayer.ViewModels"
              x:Class="DevangelicPlayer.Views.MainPage"
-             Title="DevangelicPlayer"
-             BackgroundColor="#121212">
-    <Label Text="DevangelicPlayer" TextColor="White" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
+             BackgroundColor="#000000"
+             NavigationPage.HasNavigationBar="False">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Padding="16,10,16,0">
+
+        <!-- HEADER iOS -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+            <VerticalStackLayout>
+                <Label Text="{Binding Greeting}" FontSize="13" TextColor="#A1A1A1" />
+                <Label Text="Devangelic" FontSize="30" FontAttributes="Bold" TextColor="White" Margin="0,-4,0,0" />
+                <Label Text="PLAYER" FontSize="13" TextColor="#1DB954" FontAttributes="Bold" CharacterSpacing="6" Margin="0,-2,0,0" />
+            </VerticalStackLayout>
+            <Frame Grid.Column="1" BackgroundColor="#111111" CornerRadius="25" WidthRequest="50" HeightRequest="50" Padding="0" BorderColor="#222" HasShadow="False" VerticalOptions="Center">
+                <Label Text="C" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" />
+            </Frame>
+        </Grid>
+
+        <!-- SEARCH iOS -->
+        <Frame Grid.Row="1" BackgroundColor="#111111" CornerRadius="14" Padding="12,4" Margin="0,16,0,0" BorderColor="Transparent" HasShadow="False">
+            <SearchBar Placeholder="Buscar himnos, artistas..." PlaceholderColor="#6B6B6B" TextColor="White" BackgroundColor="Transparent" Text="{Binding SearchText}" />
+        </Frame>
+
+        <!-- PLAYLISTS MEDIA MONKEY -->
+        <ScrollView Grid.Row="2" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,16,0,0">
+            <HorizontalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Playlists}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BackgroundColor="#111111" CornerRadius="20" Padding="14,8" BorderColor="#1E1E1E" HasShadow="False">
+                            <Label Text="{Binding .}" FontSize="13" TextColor="White" />
+                        </Frame>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- LISTA -->
+        <CollectionView Grid.Row="3" ItemsSource="{Binding FilteredSongs}" SelectionMode="None" Margin="0,14,0,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="56,*,Auto" Padding="0,7" RowDefinitions="Auto,Auto">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectSongCommand}" CommandParameter="{Binding .}" />
+                        </Grid.GestureRecognizers>
+                        <Frame Grid.RowSpan="2" BackgroundColor="{Binding CoverColor}" CornerRadius="14" WidthRequest="52" HeightRequest="52" Padding="0" HasShadow="False" BorderColor="Transparent">
+                            <Label Text="{Binding Emoji}" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Frame>
+                        <Label Grid.Column="1" Text="{Binding Title}" FontSize="16" FontAttributes="Bold" LineBreakMode="TailTruncation" Margin="12,0,0,0" />
+                        <Label Grid.Column="1" Grid.Row="1" Text="{Binding Artist}" FontSize="13" TextColor="#A1A1A1" Margin="12,0,0,0" />
+                        <Label Grid.Column="2" Grid.RowSpan="2" Text="{Binding Duration}" FontSize="12" TextColor="#6B6B6B" VerticalOptions="Center" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- MINI PLAYER iOS + OLED -->
+        <Frame Grid.Row="4" BackgroundColor="#0A0A0A" CornerRadius="22" Padding="12" Margin="0,8,0,14" BorderColor="#1F1F1F" HasShadow="True">
+            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="48,*,Auto">
+                <Frame BackgroundColor="{Binding CurrentSong.CoverColor}" CornerRadius="10" WidthRequest="44" HeightRequest="44" Padding="0" HasShadow="False">
+                    <Label Text="{Binding CurrentSong.Emoji}" HorizontalOptions="Center" VerticalOptions="Center" FontSize="20" />
+                </Frame>
+                <VerticalStackLayout Grid.Column="1" Margin="10,0,0,0" VerticalOptions="Center">
+                    <Label Text="{Binding CurrentSong.Title}" FontSize="15" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                    <Label Text="{Binding CurrentSong.Artist}" FontSize="12" TextColor="#A1A1A1" />
+                </VerticalStackLayout>
+                <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                    <Button Text="⏮" FontSize="18" BackgroundColor="Transparent" TextColor="White" WidthRequest="38" HeightRequest="38" Command="{Binding PrevCommand}" />
+                    <Button Text="{Binding PlayIcon}" FontSize="16" BackgroundColor="White" TextColor="Black" CornerRadius="22" WidthRequest="44" HeightRequest="44" Command="{Binding PlayPauseCommand}" />
+                    <Button Text="⏭" FontSize="18" BackgroundColor="Transparent" TextColor="White" WidthRequest="38" HeightRequest="38" Command="{Binding NextCommand}" />
+                </HorizontalStackLayout>
+                <!-- PROGRESS -->
+                <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="0,10,0,0">
+                    <ProgressBar Progress="{Binding Progress}" ProgressColor="#1DB954" BackgroundColor="#222" HeightRequest="3" />
+                </Grid>
+            </Grid>
+        </Frame>
+    </Grid>
 </ContentPage>
