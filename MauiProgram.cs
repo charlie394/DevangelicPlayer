@@ -1,6 +1,7 @@
 using DevangelicPlayer.Services;
 using DevangelicPlayer.ViewModels;
 using DevangelicPlayer.Views;
+using Microsoft.Extensions.Logging;
 
 namespace DevangelicPlayer;
 
@@ -9,13 +10,21 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder.UseMauiApp<App>();
-        builder.Services.AddSingleton<DatabaseService>();
-        builder.Services.AddSingleton<ScannerService>();
-        builder.Services.AddSingleton<AudioService>();
-        builder.Services.AddSingleton<OrganizerService>();
+        builder
+            .UseMauiApp<App>()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
+
+        builder.Services.AddSingleton<MusicService>();
         builder.Services.AddSingleton<MainViewModel>();
-        builder.Services.AddSingleton<MainPage>();
+        builder.Services.AddTransient<MainPage>();
+
+#if DEBUG
+        builder.Logging.AddDebug();
+#endif
         return builder.Build();
     }
 }
