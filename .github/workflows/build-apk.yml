@@ -9,6 +9,45 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
+
+      - name: Crear archivos que faltan
+        shell: pwsh
+        run: |
+          # 1. MainApplication que falta
+          if (-not (Test-Path "Platforms/Android/MainApplication.cs")) {
+            @"
+          using Android.App;
+          using Android.Runtime;
+          namespace DevangelicPlayer;
+          [Application]
+          public class MainApplication : MauiApplication
+          {
+              public MainApplication(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership) {}
+              protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+          }
+          "@ | Out-File -Encoding utf8 "Platforms/Android/MainApplication.cs"
+          }
+          # 2. Icono dummy
+          New-Item -ItemType Directory -Force -Path "Resources/AppIcon" | Out-Null
+          if (-not (Test-Path "Resources/AppIcon/appicon.svg")) {
+            '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#FF6B00"/></svg>' | Out-File -Encoding utf8 "Resources/AppIcon/appicon.svg"
+          }
+          # 3. Fuente dummy para que no falle
+          New-Item -ItemType Directory -Force -Path "Resources/Fonts" | Out-Null
+          if (-not (Test-Path "Resources/Fonts/OpenSans-Regular.ttf")) {
+            New-Item -ItemType File -Force -Path "Resources/Fonts/OpenSans-Regular.ttf" | Out-Null
+          }
+          # 4. Splash dummy
+          New-Item -ItemType Directory -Force -Path "Resources/Splash" | Out-Null
+          if (-not (Test-Path "Resources/Splash/splash.svg")) {
+            '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#121212"/></svg>' | Out-File -Encoding utf8 "Resources/Splash/splash.svg"
+          }
+          # 5. Images dummy
+          New-Item -ItemType Directory -Force -Path "Resources/Images" | Out-Null
+          if (-not (Test-Path "Resources/Images/dotnet_bot.svg")) {
+            '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#121212"/></svg>' | Out-File -Encoding utf8 "Resources/Images/dotnet_bot.svg"
+          }
+
       - name: Install MAUI
         run: dotnet workload install maui
       - name: Restore
