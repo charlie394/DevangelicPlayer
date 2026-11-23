@@ -1,9 +1,12 @@
+using DevangelicPlayer.Views;
+
 namespace DevangelicPlayer;
+
 public partial class App : Application
 {
-    public App(MainPage mainPage)
+    public App()
     {
         InitializeComponent();
-        MainPage = new NavigationPage(mainPage);
+        MainPage = new MainPage();
     }
 }
